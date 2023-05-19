@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Developer Directory</title>
+  <style>
+    /* Add your CSS styles for the visually appealing UI here */
+  </style>
+</head>
+<body>
+  <h1>Developer Directory</h1>
+
+  <input type="text" id="searchInput" placeholder="Search by name">
+  <select id="filterSelect">
+    <option value="">All</option>
+    <option value="designer">Designer</option>
+    <option value="developer">Developer</option>
+    <option value="manager">Manager</option>
+  </select>
+
+  <div id="developersList"></div>
+
+  <script>
+    // Retrieve the JSON data using an HTTP request
+    var request = new XMLHttpRequest();
+    request.open('GET', 'https://raw.githubusercontent.com/dixitsoham7/dixitsoham7.github.io/main/index.json', true);
+    request.onload = function() {
+      if (request.status === 200) {
+        var developers = JSON.parse(request.responseText);
+        renderDevelopers(developers);
+      }
+    };
+    request.send();
+
+    function renderDevelopers(developers) {
+      var developersList = document.getElementById('developersList');
+      developersList.innerHTML = '';
+
+      var searchInput = document.getElementById('searchInput').value.toLowerCase();
+      var filterSelect = document.getElementById('filterSelect').value.toLowerCase();
+
+      developers.forEach(function(developer) {
+        // Apply the search and filter conditions
+        if (
+          developer.name.toLowerCase().includes(searchInput) &&
+          (filterSelect === '' || developer.designation.toLowerCase() === filterSelect || developer.skills.includes(filterSelect))
+        ) {
+          // Create HTML elements to display developer information
+          var developerDiv = document.createElement('div');
+          developerDiv.innerHTML =
+            '<h2>' + developer.name + '</h2>' +
+            '<p>Designation: ' + developer.designation + '</p>' +
+            '<p>Skills: ' + developer.skills.join(', ') + '</p>';
+
+          developersList.appendChild(developerDiv);
+        }
+      });
+    }
+
+    // Add event listeners for search and filter functionality
+    document.getElementById('searchInput').addEventListener('input', renderDevelopers);
+    document.getElementById('filterSelect').addEventListener('change', renderDevelopers);
+  </script>
+</body>
+</html>
